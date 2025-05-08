@@ -25,12 +25,11 @@ func ManageMember(lib *models.Library, reader *bufio.Reader) {
 		choiceStr = strings.TrimSpace(choiceStr)
 		choice, err := strconv.Atoi(choiceStr)
 		if err != nil {
-			fmt.Println("Please enter a Number!")
+			fmt.Println("❌ Please enter a valid number.")
 			continue
 		}
 		switch choice {
 		case 0:
-			fmt.Println("<-Back Page")
 			return
 		case 1:
 			AddMember(lib, reader)
@@ -45,7 +44,7 @@ func ManageMember(lib *models.Library, reader *bufio.Reader) {
 		case 6:
 			DeleteMember(lib, reader)
 		default:
-			fmt.Println("❌Item is not available!")
+			fmt.Println("❌ Invalid option.")
 		}
 	}
 }
@@ -67,6 +66,10 @@ func AddMember(lib *models.Library, reader *bufio.Reader) {
 
 func ListMembers(lib *models.Library) {
 	fmt.Println("\n=== library Menu > Manage Members > Members List ===")
+	if len(lib.Members) == 0 {
+		fmt.Println("📭 No members found.")
+		return
+	}
 	for _, member := range lib.Members {
 		fmt.Printf("- %d : %s - %s", member.ID, member.Name, member.Phone)
 	}
@@ -74,7 +77,11 @@ func ListMembers(lib *models.Library) {
 
 func FilterMembers(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Members > Filter Members ===")
-	fmt.Print("Member Name : ")
+	if len(lib.Members) == 0 {
+		fmt.Println("📭 No members found.")
+		return
+	}
+	fmt.Print("Enter Member Name to Filter: ")
 	name, _ := reader.ReadString('\n')
 	name = strings.TrimSpace(name)
 	var result []models.Member
@@ -85,7 +92,7 @@ func FilterMembers(lib *models.Library, reader *bufio.Reader) {
 	}
 	fmt.Println("*** Filter Result ***")
 	if len(result) == 0 {
-		fmt.Println("❌Member not found")
+		fmt.Println("❌ Member not found.")
 		return
 	}
 	for _, r := range result {
@@ -95,7 +102,11 @@ func FilterMembers(lib *models.Library, reader *bufio.Reader) {
 
 func FindMember(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Members > Find Member ===")
-	fmt.Print("Member Phone : ")
+	if len(lib.Members) == 0 {
+		fmt.Println("📭 No members found.")
+		return
+	}
+	fmt.Print("Enter Member Phone to find: ")
 	phone, _ := reader.ReadString('\n')
 	phone = strings.TrimSpace(phone)
 	fmt.Println("*** Search Result ***")
@@ -105,12 +116,16 @@ func FindMember(lib *models.Library, reader *bufio.Reader) {
 			return
 		}
 	}
-	fmt.Println("❌Member not found")
+	fmt.Println("❌ Member not found")
 }
 
 func EditMember(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Members > Edit Member ===")
-	fmt.Print("Member Phone : ")
+	if len(lib.Members) == 0 {
+		fmt.Println("📭 No members found.")
+		return
+	}
+	fmt.Print("Enter Member Phone to edit: ")
 	phone, _ := reader.ReadString('\n')
 	phone = strings.TrimSpace(phone)
 	for i, m := range lib.Members {
@@ -140,7 +155,11 @@ func EditMember(lib *models.Library, reader *bufio.Reader) {
 
 func DeleteMember(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Delete Member ===")
-	fmt.Print("Member ID : ")
+	if len(lib.Members) == 0 {
+		fmt.Println("📭 No members found.")
+		return
+	}
+	fmt.Print("Enter Member ID to delete: ")
 	id, _ := reader.ReadString('\n')
 	id = strings.TrimSpace(id)
 	ID, err := strconv.Atoi(id)

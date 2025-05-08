@@ -37,7 +37,7 @@ func main() {
 		case 2:
 			services.ManageMember(&lib, reader)
 		case 3:
-			services.ListMembers(&lib)
+			services.ManageLoans(&lib, reader)
 		case 4:
 			fmt.Println("Exit Program")
 			return

@@ -69,12 +69,20 @@ func AddBook(lib *models.Library, reader *bufio.Reader) {
 }
 func ListBooks(lib *models.Library) {
 	fmt.Println("\n=== library Menu > Manage Books > Books List ===")
+	if len(lib.Books) == 0 {
+		fmt.Println("📭 No books found.")
+		return
+	}
 	for _, book := range lib.Books {
 		fmt.Printf("- %d: %s - %s  -- %s -- %v \n", book.ID, book.Title, book.Author, book.ISBN, book.Available)
 	}
 }
 func FilterBooks(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Filter Books ===")
+	if len(lib.Books) == 0 {
+		fmt.Println("📭 No books found.")
+		return
+	}
 	for {
 		fmt.Println("0.<-back")
 		fmt.Println("1.Filter By Title")
@@ -84,25 +92,24 @@ func FilterBooks(lib *models.Library, reader *bufio.Reader) {
 		choiceStr = strings.TrimSpace(choiceStr)
 		choice, err := strconv.Atoi(choiceStr)
 		if err != nil {
-			fmt.Println("Please enter a Number")
+			fmt.Println("❌ Please enter a valid number.")
 			continue
 		}
 		switch choice {
 		case 0:
-			fmt.Println("<-Back Page")
 			return
 		case 1:
 			FilterBooksByTitle(lib, reader)
 		case 2:
 			FilterBooksByAuthor(lib, reader)
 		default:
-			fmt.Println("❌Item is not available!")
+			fmt.Println("❌ Invalid option.")
 		}
 	}
 }
 func FilterBooksByTitle(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Filter Books > Filter By Title ===")
-	fmt.Print("Book Title : ")
+	fmt.Print("Enter Book Title to filter: ")
 	title, _ := reader.ReadString('\n')
 	title = strings.TrimSpace(title)
 	var result []models.Book
@@ -113,7 +120,7 @@ func FilterBooksByTitle(lib *models.Library, reader *bufio.Reader) {
 	}
 	fmt.Println("*** Filter Result *** ")
 	if len(result) == 0 {
-		fmt.Printf("❌book with title %s not found! \n", title)
+		fmt.Println("❌ Book not found!")
 		return
 	}
 	for _, r := range result {
@@ -122,7 +129,7 @@ func FilterBooksByTitle(lib *models.Library, reader *bufio.Reader) {
 }
 func FilterBooksByAuthor(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Filter Books > Filter By Author ===")
-	fmt.Print("Book Author : ")
+	fmt.Print("Enter Book Author to filter: ")
 	author, _ := reader.ReadString('\n')
 	author = strings.TrimSpace(author)
 	var result []models.Book
@@ -133,7 +140,7 @@ func FilterBooksByAuthor(lib *models.Library, reader *bufio.Reader) {
 	}
 	fmt.Println("*** Filter Result ***")
 	if len(result) == 0 {
-		fmt.Printf("❌book with author %s not found! \n", author)
+		fmt.Println("❌ Book not found!")
 		return
 	}
 	for _, r := range result {
@@ -142,40 +149,43 @@ func FilterBooksByAuthor(lib *models.Library, reader *bufio.Reader) {
 }
 func FindBooks(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Find Book ===")
+	if len(lib.Books) == 0 {
+		fmt.Println("📭 No books found.")
+		return
+	}
 	for {
 		fmt.Println("0.<-back")
 		fmt.Println("1.Find Book By ID")
-		fmt.Println("2.find Book By ISPN")
+		fmt.Println("2.find Book By ISBN")
 
 		fmt.Print("Slect Item : ")
 		choiceStr, _ := reader.ReadString('\n')
 		choiceStr = strings.TrimSpace(choiceStr)
 		choice, err := strconv.Atoi(choiceStr)
 		if err != nil {
-			fmt.Println("Please enter a Number")
+			fmt.Println("❌ Please enter a valid number.")
 			continue
 		}
 		switch choice {
 		case 0:
-			fmt.Println("<-Back Page")
+			return
 		case 1:
 			FindBooksByID(lib, reader)
 		case 2:
 			FindBooksByISBN(lib, reader)
-			return
 		default:
-			fmt.Println("❌Item is not available!")
+			fmt.Println("❌ Invalid option.")
 		}
 	}
 }
 func FindBooksByID(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Find Book > Find Book By ID ===")
-	fmt.Print("Book ID : ")
+	fmt.Print("Enter Book ID to find: ")
 	id, _ := reader.ReadString('\n')
 	id = strings.TrimSpace(id)
 	ID, err := strconv.Atoi(id)
 	if err != nil {
-		fmt.Println("Please enter a integer ID!")
+		fmt.Println("❌ Please enter a valid number ID.")
 		return
 	}
 	fmt.Println("*** Search Result ***")
@@ -189,7 +199,7 @@ func FindBooksByID(lib *models.Library, reader *bufio.Reader) {
 }
 func FindBooksByISBN(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Find Book > Find Book By ISBN ===")
-	fmt.Print("Book ISBN : ")
+	fmt.Print("Enter Edit Book ISBN to Filter: ")
 	isbn, _ := reader.ReadString('\n')
 	isbn = strings.TrimSpace(isbn)
 	fmt.Println("*** Search Reasult ***")
@@ -203,7 +213,11 @@ func FindBooksByISBN(lib *models.Library, reader *bufio.Reader) {
 }
 func EditBook(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Edit Book ===")
-	fmt.Print("Book ISBN : ")
+	if len(lib.Books) == 0 {
+		fmt.Println("📭 No books found.")
+		return
+	}
+	fmt.Print("Enter Book ISBN to edit: ")
 	isbn, _ := reader.ReadString('\n')
 	isbn = strings.TrimSpace(isbn)
 	for i, book := range lib.Books {
@@ -237,12 +251,16 @@ func EditBook(lib *models.Library, reader *bufio.Reader) {
 }
 func DeleteBook(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Delete Book ===")
-	fmt.Print("Book ID : ")
+	if len(lib.Books) == 0 {
+		fmt.Println("📭 No books found.")
+		return
+	}
+	fmt.Print("Enter Book ID to delete : ")
 	id, _ := reader.ReadString('\n')
 	id = strings.TrimSpace(id)
 	ID, err := strconv.Atoi(id)
 	if err != nil {
-		fmt.Println("Please enter a integer ID!")
+		fmt.Println("❌ Please enter a valid number ID.")
 		return
 	}
 	for i, book := range lib.Books {
