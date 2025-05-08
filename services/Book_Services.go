@@ -104,9 +104,10 @@ func FilterBooksByTitle(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Filter Books > Filter By Title ===")
 	fmt.Print("Book Title : ")
 	title, _ := reader.ReadString('\n')
+	title = strings.TrimSpace(title)
 	var result []models.Book
 	for _, book := range lib.Books {
-		if strings.Contains(book.Title, title) {
+		if strings.Contains(strings.ToLower(book.Title), strings.ToLower(title)) {
 			result = append(result, book)
 		}
 	}
@@ -122,16 +123,17 @@ func FilterBooksByTitle(lib *models.Library, reader *bufio.Reader) {
 func FilterBooksByAuthor(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Filter Books > Filter By Author ===")
 	fmt.Print("Book Author : ")
-	autnor, _ := reader.ReadString('\n')
+	author, _ := reader.ReadString('\n')
+	author = strings.TrimSpace(author)
 	var result []models.Book
 	for _, book := range lib.Books {
-		if strings.Contains(book.Author, autnor) {
+		if strings.Contains(strings.ToLower(book.Author), strings.ToLower(author)) {
 			result = append(result, book)
 		}
 	}
 	fmt.Println("*** Filter Result ***")
 	if len(result) == 0 {
-		fmt.Printf("❌book with author %s not found! \n", autnor)
+		fmt.Printf("❌book with author %s not found! \n", author)
 		return
 	}
 	for _, r := range result {
@@ -201,13 +203,11 @@ func FindBooksByISBN(lib *models.Library, reader *bufio.Reader) {
 }
 func EditBook(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Edit Book ===")
-	bookExist := false
 	fmt.Print("Book ISBN : ")
 	isbn, _ := reader.ReadString('\n')
 	isbn = strings.TrimSpace(isbn)
 	for i, book := range lib.Books {
 		if book.ISBN == isbn {
-			bookExist = true
 			fmt.Println("*** Your book before editing ***")
 			fmt.Println("*** for no changing press enter ***")
 			fmt.Printf("- %d: %s - %s  -- %s -- %v \n", book.ID, book.Title, book.Author, book.ISBN, book.Available)
@@ -230,14 +230,10 @@ func EditBook(lib *models.Library, reader *bufio.Reader) {
 				lib.Books[i].ISBN = newIsbn
 			}
 			fmt.Println("✅ Book updated successfully.")
-			break
+			return
 		}
 	}
-	if !bookExist {
-		fmt.Println("❌book not found!")
-		return
-	}
-
+	fmt.Println("❌Book not found!")
 }
 func DeleteBook(lib *models.Library, reader *bufio.Reader) {
 	fmt.Println("\n=== library Menu > Manage Books > Delete Book ===")
